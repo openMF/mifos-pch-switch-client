@@ -116,33 +116,19 @@ public class CryptoAndCertHelper {
      */
     public boolean validateSignature(String originalString, StreamServerInitialResponse response) {
         try {
+            
             PublicKey clientSignedPublicKey = clientSignedCertificate.getPublicKey();
-            
-            logger.info("originalString "+originalString);
-            logger.info("base64Signature "+response.getSignedClientId());
-            logger.info("getSignedClientIdBytes "+response.getSignedClientIdBytes());
-            logger.info("pubKeyFingerprint "+response.getPubKeyFingerprint());
-            
             String calculatedFingerprint = getPublicKeyFingerprint(clientSignedPublicKey);
-            logger.info("Calculated Fingerprint Server Intermediate Public Key: " + calculatedFingerprint);
-            
             this.serverIntermediatePublicKeyFingerprint = calculatedFingerprint;
                     
             if (!calculatedFingerprint.equalsIgnoreCase(response.getPubKeyFingerprint())) {
                 return false;
             }
             
-            logger.info("response.getSignedClientIdBytes() size: " +response.getSignedClientIdBytes().size());
-
             // decode base64, then encode as UTF_8 string (will have 256 lengths), then transform to single byte ISO_8859_1
             byte[] signatureBase64DecodedBytes = Base64.getDecoder().decode(response.getSignedClientId());
-            
-            logger.info("signatureBase64DecodedBytes length: " +signatureBase64DecodedBytes.length);
-            
             String signatureStr = new String(signatureBase64DecodedBytes, StandardCharsets.UTF_8);
             byte[] signatureBytes = signatureStr.getBytes(StandardCharsets.ISO_8859_1);
-
-            logger.info("signatureBytes length: " +signatureBytes.length);
             
             // Update digest with the input string (UTF-8 encoded)
             byte[] digest = originalString.getBytes(StandardCharsets.UTF_8);
@@ -152,8 +138,6 @@ public class CryptoAndCertHelper {
             sig.update(digest);
             boolean verified = sig.verify(signatureBytes);
             
-            logger.info("Signature verified "+verified);
-                         
             return verified;
         } 
         catch (Exception e) {
@@ -170,7 +154,7 @@ public class CryptoAndCertHelper {
             sb.append(hex[(b & 0xF0) >> 4]);
             sb.append(hex[b & 0x0F]);
         }
-        logger.info("byteArray2Hex "+sb.toString());
+        
         return sb.toString();
     }
            
