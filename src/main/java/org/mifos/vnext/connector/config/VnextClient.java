@@ -269,18 +269,11 @@ public class VnextClient {
 
     private void handleInitialResponse(StreamServerInitialResponse response) {
         try {
-            logger.debug("Validating server signature and processing challenge");
-            logger.debug("************************");
-            logger.debug("this.clientId "+this.clientId);
-            logger.debug("response.getSignedClientId() "+response.getSignedClientId());
-            logger.debug("response.getPubKeyFingerprint() "+response.getPubKeyFingerprint());
             
-            logger.debug("************************");
             // Validar firma del servidor
             boolean isValid = cryptoHelper.validateSignature(
                     this.clientId,
                     response
-                    
             );
            
             if (!isValid) {
@@ -293,15 +286,15 @@ public class VnextClient {
             logger.info("Server signature validated successfully");
 
             // Firmar el challenge nonce
+            logger.info("response.getChallengeNonce() "+response.getChallengeNonce());
+            
             String signedNonce = cryptoHelper.signString(response.getChallengeNonce());
-            String clientPubKeyFingerprint = cryptoHelper.getServerIntermediatePublicKeyFingerprint();
-
-            logger.debug("Challenge nonce signed successfully");
-
+            
+            logger.info("signedNonce "+signedNonce);
+            
             // Enviar respuesta al challenge
             StreamClientChallengeResponse challengeResponse = StreamClientChallengeResponse.newBuilder()
                     .setSignedNonce(signedNonce)
-                    .setPubKeyFingerprint(clientPubKeyFingerprint)
                     .build();
 
             StreamFromClientMsg responseMsg = StreamFromClientMsg.newBuilder()
