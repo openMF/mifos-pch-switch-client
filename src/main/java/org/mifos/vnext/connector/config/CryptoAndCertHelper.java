@@ -99,17 +99,21 @@ public class CryptoAndCertHelper {
         }
 
         try {
+            
+            // Update digest with the input string (UTF-8 encoded)
+            byte[] digest = stringToSign.getBytes(StandardCharsets.UTF_8);
+            
             Signature signature = Signature.getInstance("SHA1withRSA");
             signature.initSign(clientPrivateKey);
-            signature.update(stringToSign.getBytes(StandardCharsets.UTF_8));
+            signature.update(digest);
             byte[] signedBytes = signature.sign();
-
+            logger.info("signature.sign().length "+signature.sign().length);
             return Base64.getEncoder().encodeToString(signedBytes);
+            
         } catch (Exception e) {
             throw new RuntimeException("Error signing string", e);
         }
-    }
-    
+    }    
 
     /**
      * Validates a signature with Server Intermediate CA public key + fingerprint.
