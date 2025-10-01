@@ -280,7 +280,6 @@ public class VnextClient {
             boolean isValid = cryptoHelper.validateSignature(
                     this.clientId,
                     response
-                    
             );
            
             if (!isValid) {
@@ -293,10 +292,15 @@ public class VnextClient {
             logger.info("Server signature validated successfully");
 
             // Firmar el challenge nonce
+            logger.info("response.getChallengeNonce() "+response.getChallengeNonce());
+            
             String signedNonce = cryptoHelper.signString(response.getChallengeNonce());
+            
+            logger.info("signedNonce "+signedNonce);
+            
             String clientPubKeyFingerprint = cryptoHelper.getServerIntermediatePublicKeyFingerprint();
-
-            logger.debug("Challenge nonce signed successfully");
+            
+            logger.info("clientPubKeyFingerprint "+clientPubKeyFingerprint);
 
             // Enviar respuesta al challenge
             StreamClientChallengeResponse challengeResponse = StreamClientChallengeResponse.newBuilder()

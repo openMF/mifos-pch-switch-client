@@ -132,11 +132,13 @@ public class CryptoAndCertHelper {
                 return false;
             }
             
-            logger.info("response.getSignedClientIdBytes() lenght: " +response.getSignedClientIdBytes().size());
+            logger.info("response.getSignedClientIdBytes() size: " +response.getSignedClientIdBytes().size());
 
             // decode base64, then encode as UTF_8 string (will have 256 lengths), then transform to single byte ISO_8859_1
             byte[] signatureBase64DecodedBytes = Base64.getDecoder().decode(response.getSignedClientId());
+            
             logger.info("signatureBase64DecodedBytes length: " +signatureBase64DecodedBytes.length);
+            
             String signatureStr = new String(signatureBase64DecodedBytes, StandardCharsets.UTF_8);
             byte[] signatureBytes = signatureStr.getBytes(StandardCharsets.ISO_8859_1);
 
