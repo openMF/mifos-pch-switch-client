@@ -137,10 +137,10 @@ public class CryptoAndCertHelper {
             // Update digest with the input string (UTF-8 encoded)
             byte[] digest = originalString.getBytes(StandardCharsets.UTF_8);
             
-            Signature sig = Signature.getInstance("SHA1withRSA");            
-            sig.initVerify(serverIntermediateCertificate.getPublicKey());
-            sig.update(digest);
-            boolean verified = sig.verify(signatureBytes);
+            Signature signature = Signature.getInstance("SHA1withRSA");            
+            signature.initVerify(serverIntermediateCertificate.getPublicKey());
+            signature.update(digest);
+            boolean verified = signature.verify(signatureBytes);
             
             return verified;
         } 
