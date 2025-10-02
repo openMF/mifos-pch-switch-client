@@ -43,7 +43,6 @@ import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -286,11 +285,7 @@ public class VnextClient {
             logger.info("Server signature validated successfully");
 
             // Firmar el challenge nonce
-            logger.info("response.getChallengeNonce() "+response.getChallengeNonce());
-            
-            String signedNonce = cryptoHelper.signString(response.getChallengeNonce());
-            
-            logger.info("signedNonce "+signedNonce);
+            String signedNonce = cryptoHelper.signString(response);
             
             // Enviar respuesta al challenge
             StreamClientChallengeResponse challengeResponse = StreamClientChallengeResponse.newBuilder()

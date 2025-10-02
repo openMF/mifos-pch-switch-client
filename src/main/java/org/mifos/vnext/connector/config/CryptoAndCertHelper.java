@@ -59,9 +59,9 @@ public class CryptoAndCertHelper {
 
     public CryptoAndCertHelper(String clientPrivateKeyFilePath, String serverIntermediateCertificatePath, String clientSignedCertificatePath) 
             throws Exception {
-        logger.info("clientPrivateKeyFilePath "+clientPrivateKeyFilePath);
-        logger.info("serverIntermediateCertificatePath "+serverIntermediateCertificatePath);
-        logger.info("clientSignedCertificatePath "+clientSignedCertificatePath);
+        logger.debug("clientPrivateKeyFilePath "+clientPrivateKeyFilePath);
+        logger.debug("serverIntermediateCertificatePath "+serverIntermediateCertificatePath);
+        logger.debug("clientSignedCertificatePath "+clientSignedCertificatePath);
         // Load private key (PEM -> PrivateKey)
         this.clientPrivateKey = PemUtils.loadPrivateKey(clientPrivateKeyFilePath);
         
@@ -84,7 +84,7 @@ public class CryptoAndCertHelper {
     /**
      * Signs a string using the loaded private key (SHA1withRSA).
      */
-    public String signString(String stringToSign) throws Exception {
+    public String signString(StreamServerInitialResponse response) throws Exception {
         if (clientPrivateKey == null) {
             throw new IllegalStateException("Could not find private key");
         }
@@ -92,15 +92,22 @@ public class CryptoAndCertHelper {
         try {
             
             // Update digest with the input string (UTF-8 encoded)
-            byte[] digest = stringToSign.getBytes(StandardCharsets.UTF_8);
+            byte[] digest = response.getChallengeNonce().getBytes(StandardCharsets.UTF_8);
             
+            // Initialize signature with SHA1withRSA and sign
             Signature signature = Signature.getInstance("SHA1withRSA");
             signature.initSign(clientPrivateKey);
             signature.update(digest);
             byte[] signedBytes = signature.sign();
-            logger.info("signature.sign().length "+signature.sign().length);
-            return Base64.getEncoder().encodeToString(signedBytes);
             
+            // Convert signature bytes -> ISO_8859_1 String
+            String signatureIso = new String(signedBytes, StandardCharsets.ISO_8859_1);
+
+            // Encode back into UTF-8 bytes
+            byte[] utf8Bytes = signatureIso.getBytes(StandardCharsets.UTF_8);
+
+            // Base64 encode for transport
+            return Base64.getEncoder().encodeToString(utf8Bytes);
         } 
         catch (Exception e) {
             throw new RuntimeException("Error signing string", e);
@@ -129,6 +136,7 @@ public class CryptoAndCertHelper {
             // Update digest with the input string (UTF-8 encoded)
             byte[] digest = originalString.getBytes(StandardCharsets.UTF_8);
             
+            // Verify signature with SHA1withRSA
             Signature signature = Signature.getInstance("SHA1withRSA");            
             signature.initVerify(serverIntermediateCertificate.getPublicKey());
             signature.update(digest);
