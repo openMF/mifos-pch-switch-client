@@ -98,12 +98,12 @@ public class ApacheFineract{
         
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-        // Preparamos los datos para la transferencia
+        // Data transfer preparation
         AccountDepositServiceRequest depositRequest = new AccountDepositServiceRequest();
         depositRequest.setTenant(request.getTo().getFspId());
         depositRequest.setFspId(request.getTo().getFspId());
 
-        // Establecemos la fecha de la transacción con la fecha del sistema
+        // Set the transaction datetime
         depositRequest.setTransactionDate(currentDate);
         depositRequest.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         depositRequest.setTransactionAmount(new BigDecimal(request.getAmount().getAmount()));
@@ -142,12 +142,12 @@ public class ApacheFineract{
         
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-        // Preparamos los datos para la transferencia
+        // Data transfer preparation
         AccountWithdrawalServiceRequest withdrawalRequest = new AccountWithdrawalServiceRequest();
         withdrawalRequest.setTenant(request.getFrom().getFspId());
         withdrawalRequest.setFspId(request.getFrom().getFspId());
 
-        // Establecemos la fecha de la transacción con la fecha del sistema
+        // Set the transaction datetime
         withdrawalRequest.setTransactionDate(currentDate);
         withdrawalRequest.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         withdrawalRequest.setTransactionAmount(new BigDecimal(request.getAmount().getAmount()));

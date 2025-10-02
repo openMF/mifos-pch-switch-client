@@ -269,11 +269,8 @@ public class VnextClient {
     private void handleInitialResponse(StreamServerInitialResponse response) {
         try {
             
-            // Validar firma del servidor
-            boolean isValid = cryptoHelper.validateSignature(
-                    this.clientId,
-                    response
-            );
+            // Validate PCH server signature
+            boolean isValid = cryptoHelper.validateSignature(this.clientId,response);
            
             if (!isValid) {
                 logger.error("Invalid server signature received.");
@@ -284,10 +281,10 @@ public class VnextClient {
 
             logger.info("Server signature validated successfully");
 
-            // Firmar el challenge nonce
+            // Sign the nonce string
             String signedNonce = cryptoHelper.signString(response);
             
-            // Enviar respuesta al challenge
+            // Send the challenge response 
             StreamClientChallengeResponse challengeResponse = StreamClientChallengeResponse.newBuilder()
                     .setSignedNonce(signedNonce)
                     .build();
@@ -314,7 +311,7 @@ public class VnextClient {
     private void handleReadyResponse(StreamServerReadyResponse response) {
         this.sessionSecret = response.getSessionSecret();
 
-        // Actualizar el interceptor con el session secret
+        // Update the header interceptor using the session secret
         headerInterceptor.setSessionSecret(this.sessionSecret);
 
         this.Loggined = true;
@@ -550,8 +547,7 @@ public class VnextClient {
         }
         return participantResponse;
     }
-
-    // Getters para estado de autenticación
+    
     public boolean isAuthenticated() {
         return Loggined && headerInterceptor.isAuthenticated();
     }
@@ -564,7 +560,6 @@ public class VnextClient {
         return sessionSecret;
     }
 
-    // Método para reconexión
     public boolean reconnect() {
         try {
             shutdown();

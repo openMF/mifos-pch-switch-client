@@ -33,49 +33,64 @@ public class VnextClientConfig {
     private static final Logger logger = LoggerFactory.getLogger(VnextClientConfig.class);
     private VnextClient vnextclient;
 
+    // FspId
     @Value("${pch.vnext.fspid}")
     private String pchVnextFspId;
 
+    // PCH Client Name
     @Value("${pch.vnext.client.name}")
     private String pchVnextClientName;
 
-    @Value("${pch.vnext.client.version:1.0}") // Valor por defecto
+    // PCH Client version
+    @Value("${pch.vnext.client.version:1.0}")
     private String pchVnextClientVersion;
 
+    // PCH Server Port
     @Value("${pch.vnext.server.port}")
     private int pchVnextServerPort;
 
+    // PCH Server DNS
     @Value("${pch.vnext.server.dns}")
     private String pchVnextServerDNS;
 
-    @Value("${pch.vnext.client.private.key}") // Nueva propiedad
+    // Client Private Key
+    @Value("${pch.vnext.client.private.key}")
     private String pchVnextClientPrivateKey;
 
-    @Value("${pch.vnext.client.public.key}") // Nueva propiedad
+    // Client Public Key
+    @Value("${pch.vnext.client.public.key}") 
     private String pchVnextClientPublicKey;
 
-    @Value("${pch.vnext.server.full.certificate}") // Nueva propiedad
+    // X509 Full Chain server certificates
+    @Value("${pch.vnext.server.full.certificate}") 
     private String pchVnextServerFullChainCombined;
 
-    @Value("${pch.vnext.server.intermediate.certificate}") // Nueva propiedad
+    // X509 Intermediate certificate
+    @Value("${pch.vnext.server.intermediate.certificate}") 
     private String pchVnextServerIntermediateCertificate;
 
+    // X509 Root certificate
     @Value("${pch.vnext.server.root.certificate}")
     private String pchVnextServerRootCertificate;
 
-    @Value("${pch.vnext.client.certificate}") // Nueva propiedad
+    // X509 Client certificate
+    @Value("${pch.vnext.client.certificate}") 
     private String pchVnextClientCertificate;
 
-    @Value("${pch.vnext.main.client:true}") // Nueva propiedad con valor por defecto
+    // PCH main client
+    @Value("${pch.vnext.main.client:true}") 
     private boolean pchVnextMainClient;
 
-    @Value("${pch.vnext.server.keep-alive-time:10000}") // Valor por defecto
+    // PCH keep alive
+    @Value("${pch.vnext.server.keep-alive-time:10000}") 
     private int pchVnextKeepAliveTime;
 
-    @Value("${pch.vnext.server.keep-alive-timeout:5000}") // Valor por defecto
+    // PCH Server timeout
+    @Value("${pch.vnext.server.keep-alive-timeout:5000}") 
     private int pchVnextKeepAliveTimeout;
 
-    @Value("${pch.vnext.server.keep-alive-without-calls:true}") // Valor por defecto
+    // PCH keep alive without calls
+    @Value("${pch.vnext.server.keep-alive-without-calls:true}") 
     private boolean pchVnextKeepAliveTimeWithoutCalls;
 
     @Autowired
@@ -88,7 +103,7 @@ public class VnextClientConfig {
             logger.debug("Client Name: {}, Version: {}", pchVnextClientName, pchVnextClientVersion);
             logger.debug("Server: {}:{}", pchVnextServerDNS, pchVnextServerPort);
 
-            // Validar que las propiedades requeridas estén presentes
+            // Validate required properties
             validateRequiredProperties();
 
             this.vnextclient = new VnextClient(
@@ -167,7 +182,6 @@ public class VnextClientConfig {
         return vnextclient;
     }
 
-    // Métodos de utilidad para verificar el estado
     public boolean isClientInitialized() {
         return vnextclient != null;
     }
