@@ -59,9 +59,7 @@ public class CryptoAndCertHelper {
 
     public CryptoAndCertHelper(String clientPrivateKeyFilePath, String serverIntermediateCertificatePath, String clientSignedCertificatePath) 
             throws Exception {
-        logger.debug("clientPrivateKeyFilePath "+clientPrivateKeyFilePath);
-        logger.debug("serverIntermediateCertificatePath "+serverIntermediateCertificatePath);
-        logger.debug("clientSignedCertificatePath "+clientSignedCertificatePath);
+        
         // Load private key (PEM -> PrivateKey)
         this.clientPrivateKey = PemUtils.loadPrivateKey(clientPrivateKeyFilePath);
         
