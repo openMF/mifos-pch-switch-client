@@ -286,11 +286,7 @@ public class VnextClient {
             logger.info("Server signature validated successfully");
 
             // Firmar el challenge nonce
-            logger.info("response.getChallengeNonce() "+response.getChallengeNonce());
-            
-            String signedNonce = cryptoHelper.signString(response.getChallengeNonce());
-            
-            logger.info("signedNonce "+signedNonce);
+            String signedNonce = cryptoHelper.signString(response);
             
             // Enviar respuesta al challenge
             StreamClientChallengeResponse challengeResponse = StreamClientChallengeResponse.newBuilder()

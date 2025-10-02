@@ -32,13 +32,24 @@ import java.security.Signature;
 
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 import java.util.Base64;
+import java.util.List;
 
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.bouncycastle.util.Store;
 
 import org.mifos.grpc.proto.vnext.StreamServerInitialResponse;
 
@@ -84,7 +95,7 @@ public class CryptoAndCertHelper {
     /**
      * Signs a string using the loaded private key (SHA1withRSA).
      */
-    public String signString(String stringToSign) throws Exception {
+    public String signString(StreamServerInitialResponse response) throws Exception {
         if (clientPrivateKey == null) {
             throw new IllegalStateException("Could not find private key");
         }
@@ -92,15 +103,22 @@ public class CryptoAndCertHelper {
         try {
             
             // Update digest with the input string (UTF-8 encoded)
-            byte[] digest = stringToSign.getBytes(StandardCharsets.UTF_8);
+            byte[] digest = response.getChallengeNonce().getBytes(StandardCharsets.UTF_8);
             
+            // Initialize signature with SHA1withRSA and sign
             Signature signature = Signature.getInstance("SHA1withRSA");
             signature.initSign(clientPrivateKey);
             signature.update(digest);
             byte[] signedBytes = signature.sign();
-            logger.info("signature.sign().length "+signature.sign().length);
-            return Base64.getEncoder().encodeToString(signedBytes);
             
+            // Convert signature bytes -> ISO_8859_1 String
+            String signatureIso = new String(signedBytes, StandardCharsets.ISO_8859_1);
+
+            // Encode back into UTF-8 bytes
+            byte[] utf8Bytes = signatureIso.getBytes(StandardCharsets.UTF_8);
+
+            // Base64 encode for transport
+            return Base64.getEncoder().encodeToString(utf8Bytes);
         } 
         catch (Exception e) {
             throw new RuntimeException("Error signing string", e);
@@ -129,6 +147,7 @@ public class CryptoAndCertHelper {
             // Update digest with the input string (UTF-8 encoded)
             byte[] digest = originalString.getBytes(StandardCharsets.UTF_8);
             
+            // Verify signature with SHA1withRSA
             Signature signature = Signature.getInstance("SHA1withRSA");            
             signature.initVerify(serverIntermediateCertificate.getPublicKey());
             signature.update(digest);
