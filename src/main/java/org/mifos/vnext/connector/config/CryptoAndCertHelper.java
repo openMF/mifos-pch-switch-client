@@ -32,24 +32,13 @@ import java.security.Signature;
 
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 
 import java.util.Base64;
-import java.util.List;
 
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.cert.jcajce.JcaCertStore;
-import org.bouncycastle.cms.CMSProcessableByteArray;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.util.Store;
 
 import org.mifos.grpc.proto.vnext.StreamServerInitialResponse;
 
@@ -70,9 +59,9 @@ public class CryptoAndCertHelper {
 
     public CryptoAndCertHelper(String clientPrivateKeyFilePath, String serverIntermediateCertificatePath, String clientSignedCertificatePath) 
             throws Exception {
-        logger.info("clientPrivateKeyFilePath "+clientPrivateKeyFilePath);
-        logger.info("serverIntermediateCertificatePath "+serverIntermediateCertificatePath);
-        logger.info("clientSignedCertificatePath "+clientSignedCertificatePath);
+        logger.debug("clientPrivateKeyFilePath "+clientPrivateKeyFilePath);
+        logger.debug("serverIntermediateCertificatePath "+serverIntermediateCertificatePath);
+        logger.debug("clientSignedCertificatePath "+clientSignedCertificatePath);
         // Load private key (PEM -> PrivateKey)
         this.clientPrivateKey = PemUtils.loadPrivateKey(clientPrivateKeyFilePath);
         
