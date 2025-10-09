@@ -34,4 +34,5 @@ public class AccountWithdrawalServiceResponse {
     private int savingsId; 
     private int resourceId;
     private ArrayList<Change> changes;
+    private String transactionStatus;
 }

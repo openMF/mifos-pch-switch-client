@@ -51,7 +51,7 @@ message LookupPartySuccessResponse{
     optional string firstName = 7;
     optional string middleName = 8;
     optional string lastName = 9;
-    google.protobuf.Timestamp dateOfBirth = 10;
+    string dateOfBirth = 10;
 
     repeated ExtensionField extensions = 11;
 

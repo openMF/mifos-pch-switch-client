@@ -1,0 +1,19 @@
+package org.mifos.vnext.connector.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ServerGetCustomerAccountsResponse {
+    private String sourceFspId;
+    private String destinationFspId;
+    private String partyId;
+    private List CustomerAccount;
+}

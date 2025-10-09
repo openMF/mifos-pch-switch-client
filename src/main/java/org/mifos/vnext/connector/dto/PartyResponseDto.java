@@ -30,15 +30,21 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class PartyResponseDto {
-    String firsName;
-    String middleName;
-    String lastName;
-    String currencyCode;
-    String partyId;
-    String PartyIdType;
-    String sourceFspId;
-    String destinationFspId;
-    String transactionId;
-    String systemMessage;
-    boolean executionStatus;
+   private String sourceFspId;
+   private String destinationFspId;
+   private String requestId;
+   private String partyId;
+   private String PartyIdType;
+   private String partySubIdOrType;
+   private String currencyCode;
+   private String firsName;
+   private String middleName;
+   private String lastName;
+   private String dateOfBirth;
+   private String systemMessage;
+   private boolean executionStatus;
+
+    // Nuevos campos para manejar errores
+   private String errorCode;
+   private String errorMessage;
 }
