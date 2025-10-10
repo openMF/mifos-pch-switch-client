@@ -20,6 +20,7 @@ package org.mifos.vnext.connector.config;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
 import org.mifos.vnext.connector.rest.client.ApacheFineract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,10 @@ public class VnextClientConfig {
     private static final Logger logger = LoggerFactory.getLogger(VnextClientConfig.class);
     private VnextClient vnextclient;
 
+
+
     // FspId
+    @Getter
     @Value("${pch.vnext.fspid}")
     private String pchVnextFspId;
 
@@ -199,4 +203,5 @@ public class VnextClientConfig {
             return "INITIALIZED_BUT_NOT_AUTHENTICATED";
         }
     }
+
 }

@@ -31,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins =  "*")
 @RestController
@@ -67,13 +64,18 @@ public class VnextClientController {
     * API Rest Lookup Party Information
     */
     @PostMapping(path = "/partyinfo",
-                consumes = MediaType.APPLICATION_JSON_VALUE,
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PartyResponseDto> getPartyInfo(@RequestBody PartyRequestDto partyRequest) {
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PartyResponseDto> getPartyInfo(
+            @RequestBody PartyRequestDto partyRequest) {
+
+        String sourceFspId = vnextClientConfig.getPchVnextFspId();
         //Lookup Party Information
-        PartyResponseDto partyResponse = vnextClientConfig.getVNextClient().getPartyInfo(partyRequest);
+        PartyResponseDto partyResponse = vnextClientConfig.getVNextClient()
+                .getPartyInfo(partyRequest, sourceFspId); // ← Pasar sourceFspId
+
         //Prepare the API Rest Response
-        if(!partyResponse.isExecutionStatus()){        
+        if(!partyResponse.isExecutionStatus()){
             //Return the failure response
             return new ResponseEntity<>(partyResponse, HttpStatus.BAD_REQUEST);
         }

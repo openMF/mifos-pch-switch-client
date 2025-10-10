@@ -391,6 +391,18 @@ public class VnextClient {
         }
     }
 
+    /*public StreamFromClientMsg hanldeServerGetCustomerAccountsRequest (ServerGetCustomerAccountsRequest request,String pendingRequestId) throws Exception{
+        checkAuthentication();
+
+
+
+        return StreamFromClientMsg.newBuilder()
+                .setAcceptTransferResponse(serverGetCustomerAccountsResponse)
+                .setStreamMessageId(String.valueOf(streamMessageCounter.incrementAndGet()))
+                .setPendingRequestId(pendingRequestId)
+                .build();
+    }*/
+
     public StreamFromClientMsg handleTransferRequest(ServerAcceptTransferRequest request, String pendingRequestId) throws Exception {
         checkAuthentication();
 
@@ -502,7 +514,9 @@ public class VnextClient {
                 .setResponse(successResponse)
                 .build();
 
+        logger.debug("==========================");
         logger.debug(" LookupPartyResponse: {}",lookupResponse);
+        logger.debug("==========================");
 
         // DEBUG CON VALIDACIONES
         logger.debug("=== VALIDATED RESPONSE ===");
@@ -513,8 +527,8 @@ public class VnextClient {
         logger.debug("  - currencyCode: '{}'", successResponse.getCurrencyCode());
         logger.debug("  - firstName: '{}'", successResponse.getFirstName());
         logger.debug("  - lastName: '{}'", successResponse.getLastName());
-        logger.debug("  - DestinationFspId: '{}'", successResponse.getLastName());
-        logger.debug("  - SourceFspId: '{}'", request.getDestinationFspId());
+        //logger.debug("  - DestinationFspId: '{}'", successResponse.getDestinationFspId());
+        //logger.debug("  - SourceFspId: '{}'", request.getSourceFspId());
         logger.debug("  - pendingRequestId: '{}'", pendingRequestId);
         logger.debug("==========================");
 
@@ -550,7 +564,7 @@ public class VnextClient {
         }
     }
 
-    public PartyResponseDto getPartyInfo(PartyRequestDto partyRequest) {
+    public PartyResponseDto getPartyInfo(PartyRequestDto partyRequest, String sourceFspId) {
         checkAuthentication();
 
         LookupPartyRequest grpcRequest = LookupPartyRequest.newBuilder()
@@ -560,27 +574,74 @@ public class VnextClient {
                 .setOwnerFspId(partyRequest.getOwnerFspId())
                 .build();
 
-        LookupPartyResponse grpcResponse = LookupPartyResponse.newBuilder().build();
         PartyResponseDto partyResponse = new PartyResponseDto();
+
         try {
-            grpcResponse = this.connectionToBlockingVnext.lookupParty(grpcRequest);
-            partyResponse.setRequestId(grpcResponse.getRequestId());
-            partyResponse.setCurrencyCode(grpcResponse.getResponse().getCurrencyCode());
-            partyResponse.setDestinationFspId(grpcResponse.getDestinationFspId());
-            partyResponse.setSourceFspId(grpcResponse.getSourceFspId());
-            partyResponse.setPartyId(grpcResponse.getResponse().getPartyId());
-            partyResponse.setPartyIdType(grpcResponse.getResponse().getPartyIdType());
-            partyResponse.setFirsName(grpcResponse.getResponse().getFirstName());
-            partyResponse.setMiddleName(grpcResponse.getResponse().getMiddleName());
-            partyResponse.setLastName(grpcResponse.getResponse().getLastName());
+            LookupPartyResponse grpcResponse = this.connectionToBlockingVnext.lookupParty(grpcRequest);
+
+            logger.debug("=== GRPC RESPONSE RECEIVED ===");
+            logger.debug("SourceFspId: '{}'", grpcResponse.getSourceFspId());
+            logger.debug("DestinationFspId: '{}'", grpcResponse.getDestinationFspId());
+            logger.debug("RequestId: '{}'", grpcResponse.getRequestId());
+            logger.debug("HasResponse: {}", grpcResponse.hasResponse());
+
+
+            partyResponse.setSourceFspId(sourceFspId);
+            partyResponse.setDestinationFspId(partyRequest.getOwnerFspId());
+
+            // RequestId del gRPC response o generar uno nuevo
+            partyResponse.setRequestId(
+                    !grpcResponse.getRequestId().isEmpty() ?
+                            grpcResponse.getRequestId() : UUID.randomUUID().toString()
+            );
+
+            if (grpcResponse.hasResponse()) {
+                LookupPartySuccessResponse success = grpcResponse.getResponse();
+                logger.debug("PartyId: '{}'", success.getPartyId());
+                logger.debug("FirstName: '{}'", success.getFirstName());
+                logger.debug("LastName: '{}'", success.getLastName());
+
+                partyResponse.setPartyId(success.getPartyId());
+                partyResponse.setPartyIdType(success.getPartyIdType());
+                partyResponse.setCurrencyCode(success.getCurrencyCode());
+                partyResponse.setFirsName(success.getFirstName());
+                partyResponse.setMiddleName(success.getMiddleName());
+                partyResponse.setLastName(success.getLastName());
+                partyResponse.setDateOfBirth(success.getDateOfBirth());
+
+                if (success.hasPartySubIdOrType()) {
+                    partyResponse.setPartySubIdOrType(success.getPartySubIdOrType());
+                }
+            } else {
+
+                partyResponse.setPartyId(partyRequest.getPartyId());
+                partyResponse.setPartyIdType(partyRequest.getPartyIdType());
+                partyResponse.setCurrencyCode(partyRequest.getCurrencyCode());
+            }
+
             partyResponse.setExecutionStatus(true);
             partyResponse.setSystemMessage("success");
-        }
-        catch (Exception e) {
+
+        } catch (Exception e) {
             logger.error("PARTYINFOREQUEST failure: {}", e.getMessage(), e);
             partyResponse.setExecutionStatus(false);
             partyResponse.setSystemMessage(e.getMessage());
+
+
+            partyResponse.setSourceFspId(sourceFspId);
+            partyResponse.setDestinationFspId(partyRequest.getOwnerFspId());
+            partyResponse.setRequestId(UUID.randomUUID().toString());
+            partyResponse.setPartyId(partyRequest.getPartyId());
+            partyResponse.setPartyIdType(partyRequest.getPartyIdType());
+            partyResponse.setCurrencyCode(partyRequest.getCurrencyCode());
         }
+
+
+        logger.debug("=== FINAL PARTY RESPONSE ===");
+        logger.debug("SourceFspId (from header): {}", partyResponse.getSourceFspId());
+        logger.debug("DestinationFspId (from ownerFspId): {}", partyResponse.getDestinationFspId());
+        logger.debug("RequestId: {}", partyResponse.getRequestId());
+
         return partyResponse;
     }
 
