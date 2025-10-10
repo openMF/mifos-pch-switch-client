@@ -566,7 +566,7 @@ public class VnextClient {
             grpcResponse = this.connectionToBlockingVnext.lookupParty(grpcRequest);
             partyResponse.setRequestId(grpcResponse.getRequestId());
             partyResponse.setCurrencyCode(grpcResponse.getResponse().getCurrencyCode());
-            partyResponse.setDestinationFspId(grpcResponse.getDestinationFspId());
+            partyResponse.setDestinationFspId(grpcResponse.getSourceFspId());
             partyResponse.setSourceFspId(grpcResponse.getSourceFspId());
             partyResponse.setPartyId(grpcResponse.getResponse().getPartyId());
             partyResponse.setPartyIdType(grpcResponse.getResponse().getPartyIdType());
@@ -663,4 +663,5 @@ public class VnextClient {
             return false;
         }
     }
+
 }
