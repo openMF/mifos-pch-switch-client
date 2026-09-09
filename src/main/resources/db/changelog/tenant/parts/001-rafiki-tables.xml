@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="rafiki-001-tenant-config" author="fineract-rafiki">
+        <createTable tableName="m_rafiki_tenant_config">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_identifier" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="rafiki_admin_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rafiki_webhook_secret" type="VARCHAR(256)"/>
+            <column name="rafiki_signature_version" type="VARCHAR(10)" defaultValue="1"/>
+            <column name="default_asset_code" type="VARCHAR(10)" defaultValue="USD"/>
+            <column name="default_asset_scale" type="SMALLINT" defaultValueNumeric="2"/>
+            <column name="enabled" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="rafiki-002-wallet-address" author="fineract-rafiki">
+        <createTable tableName="m_rafiki_wallet_address">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_identifier" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="savings_account_id" type="BIGINT"/>
+            <column name="wallet_address" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rafiki_wallet_address_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_code" type="VARCHAR(10)"/>
+            <column name="asset_scale" type="SMALLINT"/>
+            <column name="status" type="VARCHAR(20)" defaultValue="ACTIVE"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <addUniqueConstraint tableName="m_rafiki_wallet_address"
+                             columnNames="tenant_identifier, wallet_address"
+                             constraintName="uk_rafiki_wallet_tenant_address"/>
+        <addUniqueConstraint tableName="m_rafiki_wallet_address"
+                             columnNames="tenant_identifier, rafiki_wallet_address_id"
+                             constraintName="uk_rafiki_wallet_tenant_rafiki_id"/>
+        <createIndex tableName="m_rafiki_wallet_address" indexName="idx_rafiki_wallet_client">
+            <column name="tenant_identifier"/>
+            <column name="client_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="rafiki-003-event" author="fineract-rafiki">
+        <createTable tableName="m_rafiki_event">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_identifier" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_type" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload" type="CLOB"/>
+            <column name="processed" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="processed_at" type="TIMESTAMP"/>
+            <column name="error_message" type="VARCHAR(1024)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+        <addUniqueConstraint tableName="m_rafiki_event"
+                             columnNames="tenant_identifier, event_id"
+                             constraintName="uk_rafiki_event_tenant_id"/>
+        <createIndex tableName="m_rafiki_event" indexName="idx_rafiki_event_type">
+            <column name="tenant_identifier"/>
+            <column name="event_type"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="rafiki-004-liquidity-tx" author="fineract-rafiki">
+        <createTable tableName="m_rafiki_liquidity_tx">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_identifier" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rafiki_payment_id" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="direction" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(19,6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="asset_code" type="VARCHAR(10)"/>
+            <column name="fineract_transaction_id" type="BIGINT"/>
+            <column name="status" type="VARCHAR(20)" defaultValue="PENDING"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <createIndex tableName="m_rafiki_liquidity_tx" indexName="idx_rafiki_liq_payment">
+            <column name="tenant_identifier"/>
+            <column name="rafiki_payment_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
