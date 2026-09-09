@@ -1,4 +1,4 @@
-# Apache Fineract ↔ Interledger Rafiki Connector
+# Mifos X - Interledger Rafiki Connector
 
 Multi-tenant Spring Boot 3 / Java 21 connector (plugin-style) that links Apache Fineract with an Interledger Rafiki instance.
 
@@ -62,7 +62,7 @@ src/main/resources/db/changelog/ – Liquibase
 src/test/       – Unit & controller tests
 ```
 
-# Apache Fineract ↔ Interledger Rafiki Connector – Architecture
+# Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -105,3 +105,10 @@ src/test/       – Unit & controller tests
 ## Licence
 
 Mozilla License
+
+```
+ Copyright since 2026 Mifos Initiative
+ 
+ This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy
+ of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+```
