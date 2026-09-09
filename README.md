@@ -68,7 +68,7 @@ src/test/       – Unit & controller tests
 ┌──────────────────────────────────────────────────────────────┐
 │                    Apache Fineract (multi-tenant)            │
 │  ┌────────────────────────────────────────────────────────┐  │
-│  │  fineract-rafiki-connector (plugin / custom module)    │  │
+│  │  mifos-rafiki-connector (plugin / custom module)    │  │
 │  │                                                        │  │
 │  │  API Layer (JAX-RS)                                    │  │
 │  │    • RafikiWebhookApiResource                          │  │
